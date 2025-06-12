@@ -1,0 +1,12 @@
+services:
+  - name: "Rust Website"
+    service_type: "http"
+    target: "https://www.rust-lang.org/"
+    interval: "10s"
+    timeout: "3s"
+
+  - name: "Tokio Docs"
+    service_type: "http"
+    target: "https://tokio.rs/"
+    interval: "15s"
+    timeout: "2s"
