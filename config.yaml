@@ -10,3 +10,9 @@ services:
     target: "https://tokio.rs/"
     interval: "15s"
     timeout: "2s"
+
+  - name: "httpstat"
+    service_type: "http"
+    target: "https://httpstat.us/200?sleep=5000"
+    interval: "15s"
+    timeout: "2s"
