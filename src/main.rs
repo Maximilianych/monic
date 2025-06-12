@@ -1,9 +1,12 @@
 mod config;
+mod scheduler;
+mod checker;
+
+use config::Config;
 
 use anyhow::Ok;
 use clap::Parser;
-
-use config::Config;
+use tokio::task::JoinSet;
 
 #[derive(Parser)]
 struct Args {
@@ -11,10 +14,21 @@ struct Args {
     config: String
 }
 
-fn main() -> anyhow::Result<()> {
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
     let args = Args::parse();
     let config = Config::from_file(&args.config).unwrap();
-
     println!("Config:\n{:#?}", config);
+
+    let mut tasks = JoinSet::new();
+
+    for service in config.services {
+        tasks.spawn(async move {
+            scheduler::start_service_monitor(service).await;
+        });
+    }
+
+    while let Some(_) = tasks.join_next().await {}
+
     Ok(())
 }
