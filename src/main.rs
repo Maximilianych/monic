@@ -1,9 +1,11 @@
 mod config;
 mod scheduler;
 mod checker;
+mod config_watcher;
+
+use config_watcher::config_watcher;
 
 use config::Config;
-
 use anyhow::Ok;
 use clap::Parser;
 use tokio::task::JoinSet;
@@ -19,6 +21,8 @@ async fn main() -> anyhow::Result<()> {
     let args = Args::parse();
     let config = Config::from_file(&args.config).unwrap();
     println!("Config:\n{:#?}", config);
+
+    let watcher_handler = tokio::spawn(config_watcher(String::from(&args.config)));
 
     let mut tasks = JoinSet::new();
 

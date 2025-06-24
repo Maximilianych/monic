@@ -6,7 +6,9 @@ edition = "2024"
 [dependencies]
 anyhow = "1.0.98"
 clap = { version = "4.5.40", features = ["derive"] }
+futures = "0.3.31"
 humantime-serde = "1.1.1"
+notify = "8.0.0"
 reqwest = "0.12.20"
 serde = { version = "1.0.219", features = ["derive"] }
 serde_yaml = "0.9.34"
