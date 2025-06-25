@@ -1,5 +1,5 @@
+use std::{path::PathBuf, time::Duration};
 use serde::Deserialize;
-use std::time::Duration;
 
 #[derive(Debug, Deserialize)]
 pub struct ServiceConfig {
@@ -18,7 +18,7 @@ pub struct Config {
 }
 
 impl Config {
-    pub fn from_file(path: &str) -> anyhow::Result<Self> {
+    pub fn from_file(path: &PathBuf) -> anyhow::Result<Self> {
         let raw_config = std::fs::read_to_string(path)?;
         let config = serde_yaml::from_str(&raw_config)?;
         Ok(config)
