@@ -7,7 +7,6 @@ use std::path::PathBuf;
 
 use anyhow::Ok;
 use clap::Parser;
-use config::Config;
 use tokio::{sync::mpsc, task::JoinSet};
 
 use config_watcher::{ConfigReloadEvent, config_watcher};
@@ -22,12 +21,11 @@ struct Args {
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let args = Args::parse();
-    let config = Config::from_file(&PathBuf::from(&args.config)).unwrap(); // Удалить потом
-    println!("Config:\n{:#?}", config);
 
     let (sender_config, mut receiver_config) = mpsc::channel(64);
 
     let watcher_handler = tokio::spawn(config_watcher(PathBuf::from(&args.config), sender_config));
+    
     let mut tasks = JoinSet::new();
 
     while let Some(res) = receiver_config.recv().await {
@@ -42,7 +40,7 @@ async fn main() -> anyhow::Result<()> {
                     });
                 }
 
-                println!("All monitors restarted")
+                println!("All monitors are restarted")
             }
             ConfigReloadEvent::Error(e) => {
                 eprintln!("Error from watcher: {}", e);
