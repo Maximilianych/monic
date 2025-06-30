@@ -1,7 +1,7 @@
 use std::{path::PathBuf, time::Duration};
 use serde::Deserialize;
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq)]
 pub struct ServiceConfig {
     pub name: String,
     pub service_type: String,
