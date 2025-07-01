@@ -24,20 +24,12 @@ struct Args {
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let args = Args::parse();
-
     let (sender_config, mut receiver_config) = mpsc::channel(64);
 
     let watcher_handler = tokio::spawn(config_watcher(PathBuf::from(&args.config), sender_config));
 
     // Получение первого конфига
-    let service_manager = match receiver_config.recv().await.unwrap() {
-        ConfigReloadEvent::Reload(config) => {
-            ServiceManager::new(config)
-        }
-        ConfigReloadEvent::Error(e) => {panic!("{e}")}
-    };
-
-    println!("Initial config:\n{:#?}", service_manager);
+    let service_manager = ServiceManager::new(receiver_config).await;
 
     Ok(())
 }
