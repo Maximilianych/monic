@@ -1,4 +1,4 @@
-use std::{path::PathBuf, time::Duration};
+use std::{collections::HashMap, path::PathBuf, time::Duration};
 use serde::Deserialize;
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq)]
@@ -12,7 +12,7 @@ pub struct ServiceConfig {
     pub timeout: Duration
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, PartialEq, Eq)]
 pub struct Config {
     pub services: Vec<ServiceConfig>
 }
@@ -22,5 +22,15 @@ impl Config {
         let raw_config = std::fs::read_to_string(path)?;
         let config = serde_yaml::from_str(&raw_config)?;
         Ok(config)
+    }
+}
+
+impl Into<HashMap<String, ServiceConfig>> for &Config {
+    fn into(self) -> HashMap<String, ServiceConfig> {
+        let mut hash_config = HashMap::new();
+        for service in self.services.clone() {
+            hash_config.insert(service.name.clone(), service);
+        };
+        hash_config
     }
 }
