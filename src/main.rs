@@ -3,6 +3,7 @@ mod config;
 mod config_watcher;
 mod service_manager;
 mod scheduler;
+mod test;
 
 use std::path::PathBuf;
 
@@ -29,7 +30,9 @@ async fn main() -> anyhow::Result<()> {
     let watcher_handler = tokio::spawn(config_watcher(PathBuf::from(&args.config), sender_config));
 
     // Получение первого конфига
-    let service_manager = ServiceManager::new(receiver_config).await;
+    let mut service_manager = ServiceManager::new(receiver_config).await;
+
+    service_manager.start_manager().await;
 
     Ok(())
 }
