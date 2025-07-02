@@ -9,11 +9,9 @@ use std::path::PathBuf;
 
 use anyhow::Ok;
 use clap::Parser;
-use tokio::{sync::mpsc, task::JoinSet};
-use tokio_util::sync::CancellationToken;
+use tokio::sync::mpsc;
 
-use config_watcher::{ConfigReloadEvent, config_watcher};
-use scheduler::start_service_monitor;
+use config_watcher:: config_watcher;
 use service_manager::ServiceManager;
 
 #[derive(Parser)]
@@ -25,7 +23,7 @@ struct Args {
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let args = Args::parse();
-    let (sender_config, mut receiver_config) = mpsc::channel(64);
+    let (sender_config, receiver_config) = mpsc::channel(64);
 
     let watcher_handler = tokio::spawn(config_watcher(PathBuf::from(&args.config), sender_config));
 

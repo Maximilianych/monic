@@ -67,19 +67,17 @@ impl ServiceManager {
     /// Возвращает None, если конфиг не изменился, или Some(ConfigDiff), если изменился; первый элемент - что нужно остановить, второй - что запустить
     fn config_comparison(&self, other_config: &Config) -> Option<ConfigDiff> {
         if self.current_config != *other_config {
-            let current_hash: HashMap<String, ServiceConfig> = (&self.current_config).into();
-            let other_hash: HashMap<String, ServiceConfig> = other_config.into();
             let mut config_diff = ConfigDiff::new();
-            config_diff.services_to_cancel = current_hash
-                .iter()
-                .filter(|(name, _)| !other_hash.contains_key(*name))
-                .map(|(name, _)| name.clone())
-                .collect();
-            config_diff.services_to_start = other_hash
-                .iter()
-                .filter(|(name, _)| !current_hash.contains_key(*name))
-                .map(|(_, value)| value.clone())
-                .collect();
+            for service in &other_config.services {
+                if !self.current_config.services.contains(service) {
+                    config_diff.services_to_start.push(service.clone());
+                }
+            }
+            for service in &self.current_config.services {
+                if !other_config.services.contains(service) {
+                    config_diff.services_to_cancel.push(service.name.clone());
+                }
+            }
             return Some(config_diff);
         }
         None
